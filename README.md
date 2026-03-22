@@ -64,8 +64,11 @@ python app_tk.py
    - **MP3 (Audio)** - Audio only in MP3 format
    - **M4A (Audio)** - Audio only in M4A format
 4. Choose quality from the dropdown
-5. (Optional) Click **Change...** to select a different save location
-6. Click **⬇️ Download** and wait for completion
+5. If you want MP3 or M4A, check the **FFmpeg Setup** section:
+   - Click **Auto-detect** if ffmpeg is already installed
+   - Or click **Choose ffmpeg...** and select the `ffmpeg` binary manually
+6. If you save to **Downloads** on macOS, click **Change...** once and re-select the Downloads folder so the app gets explicit access
+7. Click **⬇️ Download** and wait for completion
 
 ## Project Structure
 
@@ -87,11 +90,14 @@ To rebuild the macOS app bundle:
 # Install PyInstaller
 pip install pyinstaller
 
-# Build the app
-pyinstaller --onefile --windowed --name "YouTube Downloader" --add-data "downloader.py:." app_tk.py
+# Build the app bundle from the macOS spec
+pyinstaller "YouTube Downloader.spec"
 ```
 
-The built app will be in the `dist` folder.
+The built app will be in the `dist` folder as `dist/YouTube Downloader.app`.
+
+This project uses PyInstaller `--onedir` instead of `--onefile` because it launches much faster on macOS.
+The spec also includes the macOS Downloads-folder usage description so the app can request access to `~/Downloads`.
 
 ## Technical Details
 
@@ -110,6 +116,12 @@ The built app will be in the `dist` folder.
 ### Audio formats not working
 - Ensure ffmpeg is installed: `brew install ffmpeg`
 - Verify installation: `ffmpeg -version`
+- In the app, use the **FFmpeg Setup** section to auto-detect or manually choose the `ffmpeg` executable
+
+### Saving to Downloads fails or files disappear
+- Rebuild using `pyinstaller "YouTube Downloader.spec"` so the app bundle includes the macOS Downloads access metadata
+- Launch the rebuilt app and allow access if macOS prompts for the Downloads folder
+- In the app, click **Change...** and re-select the Downloads folder once so macOS grants explicit access to that folder
 
 ### Download fails
 - Check that the YouTube URL is valid and accessible
